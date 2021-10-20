@@ -2,13 +2,14 @@
   "name": "nlw-heat-frontend",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "tsc && vite build",
     "serve": "vite preview"
   },
   "dependencies": {
     "react": "^17.0.0",
-    "react-dom": "^17.0.0"
+    "react-dom": "^17.0.0",
+    "sass": "^1.43.2"
   },
   "devDependencies": {
     "@types/react": "^17.0.0",
