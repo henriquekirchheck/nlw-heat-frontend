@@ -5,7 +5,7 @@ import AppStyles from "./styles/App.module.scss"
 function App() {
   return (
     <main className={AppStyles.contentWrapper}>
-      <MessageList />
+      <MessageList numberOfMessages={3}/>
       <LoginBox />
     </main>
   )
