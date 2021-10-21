@@ -1,14 +1,15 @@
 import { api } from '../../services/api'
+import io from 'socket.io-client'
 
 import MessageListStyle from './styles.module.scss'
 import logoImage from '../../assets/logo.svg'
 import { useEffect, useState } from 'react'
 
-interface IMessageList {
+type IMessageList = {
   numberOfMessages: Number
 }
 
-type TMessage = {
+type Message = {
   id: string
   text: string
   user: {
@@ -17,12 +18,31 @@ type TMessage = {
   }
 }
 
+const messagesQueue: Message[] = []
+
+const socket = io('http://localhost:8000')
+
+socket.on('new_message', (newMessage: Message) => {
+  messagesQueue.push(newMessage)
+})
+
 function MessageList(props: IMessageList) {
-  const [ messages, setMessages ] = useState<TMessage[]>([])
+  const [messages, setMessages] = useState<Message[]>([])
+
+  useEffect(() => {
+    setInterval(() => {
+      if (messagesQueue.length > 0) {
+        setMessages(prevState =>
+          [messagesQueue[0], prevState[0], prevState[1]].filter(Boolean)
+        )
+        messagesQueue.shift()
+      }
+    }, 3000)
+  }, [])
 
   useEffect(() => {
     api
-      .get<TMessage[]>(`messages/last${props.numberOfMessages}`)
+      .get<Message[]>(`messages/last${props.numberOfMessages}`)
       .then((response) => {
         setMessages(response.data)
       })
@@ -35,9 +55,7 @@ function MessageList(props: IMessageList) {
         {messages.map((message) => {
           return (
             <li key={message.id} className={MessageListStyle.message}>
-              <p className={MessageListStyle.messageContent}>
-                {message.text}
-              </p>
+              <p className={MessageListStyle.messageContent}>{message.text}</p>
               <div className={MessageListStyle.messageUser}>
                 <div className={MessageListStyle.userImage}>
                   <img

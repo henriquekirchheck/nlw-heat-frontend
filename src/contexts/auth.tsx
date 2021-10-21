@@ -49,6 +49,8 @@ function AuthProvider(props: AuthProvider) {
 
     localStorage.setItem('@dowhile:githubToken', token)
 
+    api.defaults.headers.common.authorization = `Bearer ${token}`
+
     setUser(user)
 
     setLoading(false)
