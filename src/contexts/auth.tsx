@@ -12,6 +12,7 @@ type AuthContextData = {
   user: User | null
   signInURL: string
   signOut: () => void
+  loading: boolean
 }
 
 type AuthResponce = {
@@ -32,12 +33,14 @@ const AuthContext = createContext({} as AuthContextData)
 
 function AuthProvider(props: AuthProvider) {
   const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const signInURL = `https://github.com/login/oauth/authorize?scope=user&client_id=${
     import.meta.env.VITE_GITHUB_CLIENT_ID
   }`
 
   async function signIn(githubCode: string) {
+    setLoading(true)
     const response = await api.post<AuthResponce>('authenticate', {
       code: githubCode,
     })
@@ -47,9 +50,11 @@ function AuthProvider(props: AuthProvider) {
     localStorage.setItem('@dowhile:githubToken', token)
 
     setUser(user)
+
+    setLoading(false)
   }
 
-  async function signOut() {
+  function signOut() {
     setUser(null)
     localStorage.removeItem('@dowhile:githubToken')
   }
@@ -80,7 +85,7 @@ function AuthProvider(props: AuthProvider) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ signInURL, user, signOut }}>
+    <AuthContext.Provider value={{ signInURL, user, signOut, loading }}>
       {props.children}
     </AuthContext.Provider>
   )
