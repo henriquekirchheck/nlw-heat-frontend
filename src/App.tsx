@@ -9,7 +9,11 @@ function App() {
   const { user } = useContext(AuthContext)
 
   return (
-    <main className={AppStyles.contentWrapper}>
+    <main
+      className={`${AppStyles.contentWrapper} ${
+        !!user ? AppStyles.contentSigned : ''
+      }`}
+    >
       <MessageList numberOfMessages={3} />
       {!!user ? <SendMessageForm /> : <LoginBox />}
     </main>
