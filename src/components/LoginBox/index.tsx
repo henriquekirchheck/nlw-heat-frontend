@@ -5,10 +5,8 @@ import { AuthContext } from '../../contexts/auth'
 import Spinner from 'react-bootstrap/Spinner'
 
 function LoginBox() {
-  const { signInURL, user, loading } = useContext(AuthContext)
+  const { signInURL, loading } = useContext(AuthContext)
   let icon
-
-  console.log(user)
 
   if (loading) {
     icon = (
