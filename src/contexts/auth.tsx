@@ -11,6 +11,7 @@ type User = {
 type AuthContextData = {
   user: User | null
   signInURL: string
+  signOut: () => void
 }
 
 type AuthResponce = {
@@ -48,6 +49,23 @@ function AuthProvider(props: AuthProvider) {
     setUser(user)
   }
 
+  async function signOut() {
+    setUser(null)
+    localStorage.removeItem('@dowhile:githubToken')
+  }
+
+  useEffect(() => {
+    const token = localStorage.getItem('@dowhile:githubToken')
+
+    if(token) {
+      api.defaults.headers.common.authorization = `Bearer ${token}`
+
+      api.get<User>('profile').then(response => {
+        setUser(response.data)
+      })
+    }
+  }, [])
+
   useEffect(() => {
     const url = window.location.href
     const hasGithubCode = url.includes('?code=')
@@ -62,7 +80,7 @@ function AuthProvider(props: AuthProvider) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ signInURL, user }}>
+    <AuthContext.Provider value={{ signInURL, user, signOut }}>
       {props.children}
     </AuthContext.Provider>
   )
